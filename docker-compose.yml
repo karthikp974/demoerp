@@ -1,0 +1,99 @@
+# WFT Institutions demo — separate stack from KIET ERP (c:\erp).
+# Project name isolates containers/volumes from college-erp compose on the same host.
+name: wftinst
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wftinst-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-wft_erp}
+      POSTGRES_USER: ${POSTGRES_USER:-wft_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wft_password}
+      TZ: ${TZ:-Asia/Kolkata}
+      PGTZ: ${DATABASE_TIMEZONE:-Asia/Kolkata}
+    ports:
+      - "5433:5432"
+    volumes:
+      - wft_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wft_user} -d ${POSTGRES_DB:-wft_erp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: wftinst-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: wftinst-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-wft_user}:${POSTGRES_PASSWORD:-wft_password}@postgres:5432/${POSTGRES_DB:-wft_erp}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TZ: ${TZ:-Asia/Kolkata}
+      DATABASE_TIMEZONE: ${DATABASE_TIMEZONE:-Asia/Kolkata}
+    ports:
+      - "4001:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: wftinst-worker
+    restart: unless-stopped
+    command: ["npm", "run", "worker", "-w", "apps/backend"]
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-wft_user}:${POSTGRES_PASSWORD:-wft_password}@postgres:5432/${POSTGRES_DB:-wft_erp}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TZ: ${TZ:-Asia/Kolkata}
+      DATABASE_TIMEZONE: ${DATABASE_TIMEZONE:-Asia/Kolkata}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: wftinst-frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DEV_API_PROXY_TARGET: http://backend:4000
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:5174}
+      PREVIEW_ALLOWED_HOSTS: ${PREVIEW_ALLOWED_HOSTS:-}
+    ports:
+      - "5174:5173"
+    depends_on:
+      - backend
+
+volumes:
+  wft_postgres_data:

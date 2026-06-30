@@ -1,0 +1,11 @@
+# WFT Institutions ERP Rules
+
+- **Single campus demo:** `WFT` — WFT Institutions. One database; no KIET/KIEK/KIEW catalog.
+- Academic hierarchy: `Campus → Program → Branch → Batch → Class → Section → Users`.
+- Teacher access is contextual: `STPO`, `CTPO`, and `HTPO` with scope.
+- Never rely on frontend-only permissions — every protected backend endpoint must check user type, action, and scope.
+- Large lists: pagination, search, filters.
+- Mutating actions: idempotency + disabled UI states where relevant.
+- Heavy work (PDF, bulk, exports, reports): background jobs.
+- User actions: top-right toast with 5s timeline.
+- This folder is **independent** from `c:\erp` (KIET production). Do not copy KIET seed or campus codes here.

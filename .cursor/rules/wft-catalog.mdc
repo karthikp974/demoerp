@@ -1,0 +1,27 @@
+# WFT Institutions — Institution Catalog
+
+**Hierarchy:** `Campus → Program (UI: Department) → Branch → Batch → Class → Section`
+
+**Single institution:** one campus (`WFT`), one database, no shared/isolated campus groups in seed data.
+
+**Brand color:** `--erp-blue` = `#004b8d`
+
+## Campus
+
+| Code | Name              |
+|------|-------------------|
+| WFT  | WFT Institutions  |
+
+## Departments & Branches (seed)
+
+| Dept code | Name  | Years | Branches |
+|-----------|-------|-------|----------|
+| BTECH     | BTech | 4     | CSC — Cyber Security; CSE — Computer Science; CSAIML — AI & ML |
+| MBA       | MBA   | 2     | CS — Computer Science |
+| MCA       | MCA   | 2     | CS — Computer Science |
+
+Seed source: `apps/backend/prisma/seed.ts`
+
+## UI conventions
+
+Same as production ERP: `db-input`, `FormSelect`, toasts on actions, pagination on large lists.

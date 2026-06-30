@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.env
+.env.local
+.env.*.local
+coverage
+.turbo
+.vite
+uploads
+*.log
+*.tsbuildinfo
+.claude
+.cursor/projects

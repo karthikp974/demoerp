@@ -1,0 +1,26 @@
+{
+  "name": "wft-institutions",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WFT Institutions demo ERP — single campus, single database.",
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "scripts": {
+    "dev": "node scripts/free-dev-port.mjs && concurrently -n backend,frontend \"npm run dev -w @college-erp/backend\" \"npm run dev -w @college-erp/frontend\"",
+    "build": "npm run build -w apps/backend && npm run build -w apps/frontend",
+    "typecheck": "npm run typecheck -w apps/backend && npm run typecheck -w apps/frontend",
+    "test": "npm run test -w apps/backend",
+    "lint": "npm run lint -w apps/backend && npm run lint -w apps/frontend",
+    "check": "npm run prisma:generate && npm run typecheck && npm run lint && npm run test && npm run build",
+    "smoke": "node scripts/smoke.mjs",
+    "lan": "node scripts/print-lan-urls.mjs",
+    "dev:firewall": "node scripts/open-dev-firewall.mjs",
+    "prisma:generate": "npm run prisma:generate -w apps/backend",
+    "prisma:migrate": "npm run prisma:migrate -w apps/backend"
+  },
+  "devDependencies": {
+    "concurrently": "latest"
+  }
+}
