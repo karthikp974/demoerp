@@ -15,6 +15,45 @@
 | Postgres | **5433**         | 5432                 |
 | Redis    | **6380**         | 6379                 |
 
+## Git (separate from KIET ERP)
+
+This folder has its **own git repo** — not linked to `c:\erp` / kieterp.
+
+```bash
+cd c:\wftinst
+git status
+```
+
+**New GitHub repo (one-time):**
+
+```bash
+# On GitHub: create empty repo e.g. wftinst-erp
+git remote add origin https://github.com/YOUR_USER/wftinst-erp.git
+git push -u origin main
+```
+
+## Docker (separate stack)
+
+Project name **`wftinst`** — containers/volumes never clash with KIET `college-erp-*`.
+
+**One command bootstrap (Windows):**
+
+```powershell
+cd c:\wftinst
+.\scripts\docker-bootstrap.ps1
+```
+
+**Or manual:**
+
+```bash
+cd c:\wftinst
+copy .env.example .env
+docker compose up -d --build
+docker compose exec backend sh -c "cd apps/backend && npx prisma migrate deploy && npx ts-node --transpile-only prisma/seed.ts"
+```
+
+Open **http://localhost:5174**
+
 ## Quick start (Docker)
 
 ```bash
