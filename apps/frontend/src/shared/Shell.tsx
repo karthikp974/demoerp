@@ -1,11 +1,12 @@
-import { ArrowLeft, Database, GraduationCap, LayoutDashboard, Menu, School, UserRoundCog, X } from "lucide-react";
+import { ArrowLeft, Database, GraduationCap, LayoutDashboard, Menu, UserRoundCog, X } from "lucide-react";
 import { useState } from "react";
 import { usePortalMobileMenuOpen } from "./portal-mobile-menu";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/auth-context";
 import { AdminMenuContent } from "./AdminMenu";
 import { ProfileMenuButton } from "./ProfileMenu";
-import { INSTITUTION_ERP_TITLE, INSTITUTION_LOGO_SRC, INSTITUTION_NAME } from "./institution-branding";
+import { InstitutionLogoMark } from "./InstitutionLogoMark";
+import { INSTITUTION_ERP_TITLE } from "./institution-branding";
 
 const navItems = [
   { to: "/admin", label: "Admin Portal", icon: LayoutDashboard },
@@ -129,11 +130,9 @@ export function Shell() {
         </button>
       </div>
       <div className="mb-6 flex items-center gap-3 rounded-2xl bg-[#004B8D] p-3">
-        <div className="rounded-xl bg-white/15 p-2 text-white shadow-sm">
-          <School size={20} />
-        </div>
+        <InstitutionLogoMark variant="sidebar" />
         <div>
-          <p className="text-sm font-bold text-white">College ERP</p>
+          <p className="text-sm font-bold text-white">{INSTITUTION_ERP_TITLE}</p>
           <p className="text-[11px] text-slate-400">{user ? `${user.fullName} (${user.type})` : "Secure portal"}</p>
         </div>
       </div>
@@ -191,10 +190,9 @@ export function Shell() {
                   >
                     <ArrowLeft size={20} aria-hidden />
                   </button>
-                  <img className="erp-header-logo" src={INSTITUTION_LOGO_SRC} alt={INSTITUTION_NAME} />
+                  <InstitutionLogoMark variant="header" />
                   <div className="erp-header-copy">
                     <p className="erp-header-title">{INSTITUTION_ERP_TITLE}</p>
-                    <p className="erp-header-subtitle">Group of Institutions</p>
                   </div>
                 </>
               ) : (
@@ -208,10 +206,9 @@ export function Shell() {
                   >
                     {isMenuOpen ? <X size={20} aria-hidden /> : <Menu size={20} aria-hidden />}
                   </button>
-                  <img className="erp-header-logo" src={INSTITUTION_LOGO_SRC} alt={INSTITUTION_NAME} />
+                  <InstitutionLogoMark variant="header" />
                   <div className="erp-header-copy">
                     <p className="erp-header-title">{INSTITUTION_ERP_TITLE}</p>
-                    <p className="erp-header-subtitle">Group of Institutions</p>
                   </div>
                   {location.pathname !== "/admin" ? <span className="erp-page-pill">{pageTitle}</span> : null}
                 </>

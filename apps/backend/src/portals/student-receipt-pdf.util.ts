@@ -6,7 +6,7 @@ import {
   formatPdfTimestamp,
   resolveFeePaymentTransactionId,
   resolveFeePaymentTransactionLabel,
-  resolveKietLogoPath
+  drawPdfWordmark,
 } from "../common/pdf-institutional.util";
 
 export type StudentReceiptPdfInput = {
@@ -72,23 +72,15 @@ export function buildStudentReceiptPdfBuffer(input: StudentReceiptPdfInput, gene
     const modeLabel = formatPdfPaymentMode(input.paymentMode);
     const remarks = input.remarks?.trim() || "Nil";
 
-    let y = doc.page.margins.top;
-    const logoPath = resolveKietLogoPath();
-    if (logoPath) {
-      try {
-        doc.image(logoPath, left, y, { width: 96 });
-      } catch {
-        /* no logo */
-      }
-    }
-
+    const top = doc.page.margins.top;
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
       .fillColor("#64748b")
-      .text(input.receiptNo, left, y, { width: right - left, align: "right" });
+      .text(input.receiptNo, left, top, { width: right - left, align: "right" });
 
-    y += 58;
+    let y = drawPdfWordmark(doc, left, top, "left");
+    y += 12;
     doc.font("Helvetica-Bold").fontSize(14).fillColor("#004b8d").text("Fee payment receipt", left, y, {
       width: right - left,
       align: "center"

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import nodemailer from "nodemailer";
+import { INSTITUTION_ERP_NAME } from "../common/institution-branding.constants";
 
 type TeacherWelcomeEmail = {
   email: string;
@@ -43,25 +44,25 @@ export class EmailService {
     const result = await transporter.sendMail({
       from,
       to: input.email,
-      subject: "Reset your KIET ERP password",
+      subject: `Reset your ${INSTITUTION_ERP_NAME} password`,
       text: [
         `Hello ${input.fullName},`,
         "",
-        "We received a request to reset your KIET ERP password.",
+        `We received a request to reset your ${INSTITUTION_ERP_NAME} password.`,
         `Use this link within ${input.expiresMinutes} minutes (single use):`,
         input.resetUrl,
         "",
         "If you did not request this, you can ignore this email.",
         "",
         "Regards,",
-        "KIET ERP"
+        INSTITUTION_ERP_NAME
       ].join("\n"),
       html: [
         `<p>Hello ${escapeHtml(input.fullName)},</p>`,
-        "<p>We received a request to reset your KIET ERP password.</p>",
+        `<p>We received a request to reset your ${INSTITUTION_ERP_NAME} password.</p>`,
         `<p><a href="${escapeHtml(input.resetUrl)}">Reset your password</a> (expires in ${input.expiresMinutes} minutes, single use)</p>`,
         "<p>If you did not request this, you can ignore this email.</p>",
-        "<p>Regards,<br>KIET ERP</p>"
+        `<p>Regards,<br>${escapeHtml(INSTITUTION_ERP_NAME)}</p>`
       ].join("")
     });
     this.logger.log(`Password reset email sent to ${input.email}. MessageId: ${result.messageId}`);
@@ -88,11 +89,11 @@ export class EmailService {
     const result = await transporter.sendMail({
       from,
       to: input.email,
-      subject: "Welcome to KIET ERP",
+      subject: `Welcome to ${INSTITUTION_ERP_NAME}`,
       text: [
         `Hello ${input.fullName},`,
         "",
-        "Your teacher account has been created in KIET ERP.",
+        `Your teacher account has been created in ${INSTITUTION_ERP_NAME}.`,
         `Teacher ID: ${input.employeeCode}`,
         `Temporary password: ${input.temporaryPassword}`,
         "",
@@ -102,14 +103,14 @@ export class EmailService {
         "Please sign in and change your password after first login.",
         "",
         "Regards,",
-        "KIET ERP"
+        INSTITUTION_ERP_NAME
       ].join("\n")
     });
     this.logger.log(`Teacher welcome email sent to ${input.email}. MessageId: ${result.messageId}`);
   }
 
   private resolveFromAddress() {
-    const fromName = this.config.get<string>("EMAIL_FROM_NAME") ?? "KIET ERP";
+    const fromName = this.config.get<string>("EMAIL_FROM_NAME") ?? INSTITUTION_ERP_NAME;
     const fromAddress = this.config.get<string>("EMAIL_FROM_ADDRESS") ?? this.config.get<string>("SMTP_USER");
     if (!fromAddress) return null;
     return `"${fromName}" <${fromAddress}>`;

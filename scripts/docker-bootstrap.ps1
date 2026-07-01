@@ -12,7 +12,7 @@ docker compose exec backend sh -c "cd apps/backend && npx ts-node --transpile-on
 
 Write-Host ""
 Write-Host "WFT Institutions is up:"
-Write-Host "  Frontend  http://localhost:5174"
-Write-Host "  Backend   http://localhost:4001/api/health"
+Write-Host "  Frontend  http://localhost:5176"
+Write-Host "  Backend   http://localhost:4002/api/health"
 Write-Host "  Admin     admin / Admin@12345"
 Write-Host "  Owner     wftowner / WftDemo@123  (/ops)"

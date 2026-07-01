@@ -14,7 +14,7 @@ services:
       TZ: ${TZ:-Asia/Kolkata}
       PGTZ: ${DATABASE_TIMEZONE:-Asia/Kolkata}
     ports:
-      - "5433:5432"
+      - "5435:5432"
     volumes:
       - wft_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,7 +28,7 @@ services:
     container_name: wftinst-redis
     restart: unless-stopped
     ports:
-      - "6380:6379"
+      - "6382:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -50,7 +50,7 @@ services:
       TZ: ${TZ:-Asia/Kolkata}
       DATABASE_TIMEZONE: ${DATABASE_TIMEZONE:-Asia/Kolkata}
     ports:
-      - "4001:4000"
+      - "4002:4000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,10 +88,10 @@ services:
       - .env
     environment:
       DEV_API_PROXY_TARGET: http://backend:4000
-      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:5174}
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:5176}
       PREVIEW_ALLOWED_HOSTS: ${PREVIEW_ALLOWED_HOSTS:-}
     ports:
-      - "5174:5173"
+      - "5176:5173"
     depends_on:
       - backend
 

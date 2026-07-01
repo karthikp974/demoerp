@@ -1,26 +1,28 @@
 # WFT Institutions — Demo ERP
 
-**Separate project from KIET ERP (`c:\erp`).** Same codebase shape, different institution:
+**Separate project from KIET ERP (`C:\erp`).** Same codebase shape, different institution:
 
 - **One campus:** `WFT` — WFT Institutions  
 - **One database:** no KIET/KIEK shared groups, no KIEW isolation  
 - **Demo portal** for WorkflowTech product demos  
 
-## Ports (avoid clash with KIET ERP on same PC)
+## Ports (each folder has its own — do not overlap)
 
-| Service  | WFT Institutions | KIET ERP (reference) |
-|----------|------------------|----------------------|
-| Frontend | **5174**         | 5173                 |
-| Backend  | **4001**         | 4000                 |
-| Postgres | **5433**         | 5432                 |
-| Redis    | **6380**         | 6379                 |
+| Service  | WFT (`C:\WFT-Institutions`) | unierp (other folder) | KIET (`C:\erp`) |
+|----------|----------------------------|------------------------|-----------------|
+| Frontend | **5176**                   | **5174** (reserved)    | 5173            |
+| Backend  | **4002**                   | **4001** (reserved)    | 4000            |
+| Postgres | **5435**                   | **5433** (reserved)    | 5432            |
+| Redis    | **6382**                   | **6380** (reserved)    | 6379            |
+
+Open WFT at **http://localhost:5176**
 
 ## Git (separate from KIET ERP)
 
 This folder has its **own git repo** — not linked to `c:\erp` / kieterp.
 
 ```bash
-cd c:\wftinst
+cd C:\WFT-Institutions
 git status
 ```
 
@@ -39,31 +41,31 @@ Project name **`wftinst`** — containers/volumes never clash with KIET `college
 **One command bootstrap (Windows):**
 
 ```powershell
-cd c:\wftinst
+cd C:\WFT-Institutions
 .\scripts\docker-bootstrap.ps1
 ```
 
 **Or manual:**
 
 ```bash
-cd c:\wftinst
+cd C:\WFT-Institutions
 copy .env.example .env
 docker compose up -d --build
 docker compose exec backend sh -c "cd apps/backend && npx prisma migrate deploy && npx ts-node --transpile-only prisma/seed.ts"
 ```
 
-Open **http://localhost:5174**
+Open **http://localhost:5176**
 
 ## Quick start (Docker)
 
 ```bash
-cd c:\wftinst
+cd C:\WFT-Institutions
 copy .env.example .env
 docker compose up -d
 docker compose exec backend sh -c "cd apps/backend && npx prisma migrate deploy && npx ts-node --transpile-only prisma/seed.ts"
 ```
 
-Open **http://localhost:5174**
+Open **http://localhost:5176**
 
 ## Demo logins (after seed)
 
@@ -80,7 +82,7 @@ Owner spectator console: `/ops` (username `wftowner`).
 
 ```bash
 npm install
-# Postgres on 5433 + Redis on 6380, or adjust .env
+# Postgres on 5435 + Redis on 6382, or adjust .env
 npm run prisma:migrate
 npm run dev
 # Frontend http://localhost:5173 — set FRONTEND_PORT in .env if needed
@@ -91,3 +93,5 @@ npm run dev
 - **Do not mix** with KIET ERP database or `.env`.  
 - KIET-specific seed, catalog rules, and branding were removed or replaced for WFT.  
 - Shared-group code paths remain in the engine but seed uses **campus-owned** programs only.
+
+# demoerp

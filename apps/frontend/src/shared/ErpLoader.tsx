@@ -1,42 +1,42 @@
 import type { CSSProperties } from "react";
-import { INSTITUTION_LOGO_SRC, INSTITUTION_NAME } from "./institution-branding";
+import { InstitutionLogoMark } from "./InstitutionLogoMark";
 
-type KietLoaderTheme = "light" | "dark";
+type ErpLoaderTheme = "light" | "dark";
 
 type ErpLoaderProps = {
   label?: string;
-  theme?: KietLoaderTheme;
+  theme?: ErpLoaderTheme;
   size?: number;
   fullScreen?: boolean;
 };
 
 export function ErpLoader({ label = "", theme, size = 116, fullScreen = false }: ErpLoaderProps) {
-  const style = { "--kiet-loader-size": `${size}px` } as CSSProperties;
+  const style = { "--erp-loader-size": `${size}px` } as CSSProperties;
 
   return (
     <div
-      className={`kiet-loader ${fullScreen ? "kiet-loader-fullscreen" : "kiet-loader-inline"}`}
+      className={`erp-loader ${fullScreen ? "erp-loader-fullscreen" : "erp-loader-inline"}`}
       data-theme={theme}
       style={style}
       role="status"
       aria-live="polite"
     >
-      <div className="kiet-loader-mark">
-        <div className="kiet-loader-ring kiet-loader-ring-blue" />
-        <div className="kiet-loader-ring kiet-loader-ring-red" />
-        <div className="kiet-loader-disc">
-          <img className="kiet-loader-logo" src={INSTITUTION_LOGO_SRC} alt={INSTITUTION_NAME} />
+      <div className="erp-loader-mark">
+        <div className="erp-loader-ring erp-loader-ring-blue" />
+        <div className="erp-loader-ring erp-loader-ring-red" />
+        <div className="erp-loader-disc">
+          <InstitutionLogoMark className="institution-logo-mark--loader" />
         </div>
       </div>
-      {label ? <p className="kiet-loader-label">{label}</p> : null}
+      {label ? <p className="erp-loader-label">{label}</p> : null}
     </div>
   );
 }
 
-export function KietLoader(props: Omit<ErpLoaderProps, "theme">) {
+export function WftLoader(props: Omit<ErpLoaderProps, "theme">) {
   return <ErpLoader {...props} theme="light" />;
 }
 
-export function KietLoaderSDK(props: ErpLoaderProps) {
+export function WftLoaderSDK(props: ErpLoaderProps) {
   return <ErpLoader {...props} />;
 }

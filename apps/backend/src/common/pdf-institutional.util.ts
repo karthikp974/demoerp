@@ -1,25 +1,9 @@
-import { existsSync } from "fs";
-import { join } from "path";
 import type PDFDocument from "pdfkit";
 import { formatIstDateTime } from "./ist-time.util";
-
-/** Resolve KIET logo used on student portal PDFs (marks, attendance, fees). */
-export function resolveKietLogoPath(): string | null {
-  const candidates = [
-    join(__dirname, "..", "assets", "kiet-logo.png"),
-    join(process.cwd(), "src", "assets", "kiet-logo.png"),
-    join(process.cwd(), "assets", "kiet-logo.png"),
-    join(process.cwd(), "..", "frontend", "public", "kiet-logo.png")
-  ];
-  for (const p of candidates) {
-    try {
-      if (existsSync(p)) return p;
-    } catch {
-      /* ignore */
-    }
-  }
-  return null;
-}
+import {
+  INSTITUTION_LOGO_TAGLINE,
+  INSTITUTION_LOGO_WORDMARK
+} from "./institution-branding.constants";
 
 export function formatPdfTimestamp(date: Date) {
   return formatIstDateTime(date);
@@ -79,23 +63,48 @@ export type PdfTableColumn = {
   align?: "left" | "right" | "center";
 };
 
+/** Text wordmark for PDF headers — WFT with Institutions below (no image logo). */
+export function drawPdfWordmark(
+  doc: InstanceType<typeof PDFDocument>,
+  left: number,
+  y: number,
+  align: "left" | "center" = "center"
+): number {
+  const right = doc.page.margins.right;
+  const contentWidth = doc.page.width - left - right;
+  const blockWidth = 128;
+  const x = align === "center" ? left + Math.max(0, (contentWidth - blockWidth) / 2) : left;
+
+  doc.font("Helvetica-Bold").fontSize(22).fillColor("#004b8d").text(INSTITUTION_LOGO_WORDMARK, x, y, {
+    width: blockWidth,
+    align: "center"
+  });
+  const tagY = doc.y + 2;
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(9)
+    .fillColor("#64748b")
+    .text(INSTITUTION_LOGO_TAGLINE.toUpperCase(), x, tagY, {
+      width: blockWidth,
+      align: "center",
+      characterSpacing: 1.1
+    });
+  doc.x = left;
+  return doc.y + 8;
+}
+
 export function drawPdfInstitutionalHeader(doc: InstanceType<typeof PDFDocument>, title: string) {
   const left = doc.page.margins.left;
   const right = doc.page.margins.right;
   const contentWidth = doc.page.width - left - right;
-  let y = doc.page.margins.top;
+  const y = doc.page.margins.top;
 
-  const logoPath = resolveKietLogoPath();
-  if (logoPath) {
-    try {
-      doc.image(logoPath, left, y, { width: 110 });
-      y += 54;
-    } catch {
-      /* no logo */
-    }
-  }
+  const afterWordmark = drawPdfWordmark(doc, left, y, "center");
 
-  doc.font("Helvetica-Bold").fontSize(16).fillColor("#004b8d").text(title, left, y, { width: contentWidth, align: "center" });
+  doc.font("Helvetica-Bold").fontSize(16).fillColor("#004b8d").text(title, left, afterWordmark, {
+    width: contentWidth,
+    align: "center"
+  });
   doc.x = left;
   doc.y = doc.y + 10;
 }

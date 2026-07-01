@@ -11,6 +11,7 @@ import {
 } from "./demo-credentials";
 import { getDefaultPortal } from "./portal-redirect";
 import { useToast } from "../shared/toast-context";
+import { InstitutionLogoMark } from "../shared/InstitutionLogoMark";
 
 type DemoBoxProps = {
   kind: "admin" | "teacher" | "student";
@@ -96,6 +97,7 @@ export function LoginPage() {
     <main className="login-page portal-no-footer">
       <div className="login-page-shell">
         <header className="login-hero">
+          <InstitutionLogoMark className="login-hero-logo" />
           <h1 className="login-title">
             Welcome to your <span className="login-title-muted">campus.</span>
           </h1>

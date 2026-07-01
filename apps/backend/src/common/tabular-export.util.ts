@@ -6,16 +6,16 @@ import {
   drawPdfInstitutionalHeader,
   drawPdfSectionHeading,
   drawPdfTable,
-  formatPdfTimestamp,
-  resolveKietLogoPath
+  formatPdfTimestamp
 } from "./pdf-institutional.util";
+import { INSTITUTION_NAME } from "./institution-branding.constants";
 
 export const TABULAR_EXPORT_FORMATS = ["csv", "excel", "google-sheets", "pdf", "docx", "txt"] as const;
 export type TabularExportFormat = (typeof TABULAR_EXPORT_FORMATS)[number];
 export type TabularExportFormatWithTxt = TabularExportFormat;
 
-const KIET_BLUE = "FF004B8D";
-const KIET_SLATE = "FF64748B";
+const INSTITUTION_BLUE = "FF004B8D";
+const INSTITUTION_SLATE = "FF64748B";
 const ROW_STRIPE = "FFF8FAFC";
 
 function escapeHtml(value: string | number) {
@@ -67,41 +67,27 @@ function buildRtf(title: string, rows: (string | number | null | undefined)[][])
 }
 
 function styleInstitutionRow(cell: ExcelJS.Cell, colCount: number) {
-  cell.font = { size: 14, bold: true, color: { argb: KIET_BLUE } };
+  cell.font = { size: 14, bold: true, color: { argb: INSTITUTION_BLUE } };
   cell.alignment = { vertical: "middle" };
 }
 
 function styleTitleRow(cell: ExcelJS.Cell) {
-  cell.font = { size: 12, bold: true, color: { argb: KIET_BLUE } };
+  cell.font = { size: 12, bold: true, color: { argb: INSTITUTION_BLUE } };
 }
 
 function styleMetaRow(cell: ExcelJS.Cell) {
-  cell.font = { size: 9, color: { argb: KIET_SLATE } };
+  cell.font = { size: 9, color: { argb: INSTITUTION_SLATE } };
 }
 
 function styleHeaderCell(cell: ExcelJS.Cell) {
   cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-  cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: KIET_BLUE } };
-  cell.border = { bottom: { style: "thin", color: { argb: KIET_BLUE } } };
-}
-
-async function addWorksheetLogo(wb: ExcelJS.Workbook, ws: ExcelJS.Worksheet, colCount: number) {
-  const logoPath = resolveKietLogoPath();
-  if (!logoPath) return;
-  try {
-    const imageId = wb.addImage({ filename: logoPath, extension: "png" });
-    ws.addImage(imageId, {
-      tl: { col: Math.max(colCount - 1.2, 0), row: 0 },
-      ext: { width: 96, height: 48 }
-    });
-  } catch {
-    /* logo optional */
-  }
+  cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: INSTITUTION_BLUE } };
+  cell.border = { bottom: { style: "thin", color: { argb: INSTITUTION_BLUE } } };
 }
 
 async function buildXlsxBuffer(title: string, rows: (string | number | null | undefined)[][]) {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "College ERP";
+  wb.creator = INSTITUTION_NAME;
   const ws = wb.addWorksheet("Report");
   const colCount = Math.max(rows[0]?.length ?? 1, 2);
   const keyValue = isKeyValueExport(rows);
@@ -109,10 +95,9 @@ async function buildXlsxBuffer(title: string, rows: (string | number | null | un
 
   ws.getRow(1).height = 28;
   const institutionCell = ws.getCell("A1");
-  institutionCell.value = "KIET Group of Institutions";
+  institutionCell.value = INSTITUTION_NAME;
   styleInstitutionRow(institutionCell, colCount);
   ws.mergeCells(1, 1, 1, colCount);
-  await addWorksheetLogo(wb, ws, colCount);
 
   const titleCell = ws.getCell("A2");
   titleCell.value = title;
@@ -132,12 +117,12 @@ async function buildXlsxBuffer(title: string, rows: (string | number | null | un
         ws.mergeCells(r, 1, r, 2);
         const cell = ws.getCell(r, 1);
         cell.value = sectionTitle(field);
-        cell.font = { bold: true, color: { argb: KIET_BLUE } };
+        cell.font = { bold: true, color: { argb: INSTITUTION_BLUE } };
         r += 1;
         continue;
       }
       ws.getCell(r, 1).value = field;
-      ws.getCell(r, 1).font = { bold: true, color: { argb: KIET_BLUE } };
+      ws.getCell(r, 1).font = { bold: true, color: { argb: INSTITUTION_BLUE } };
       ws.getCell(r, 2).value = row[1] ?? "";
       r += 1;
     }

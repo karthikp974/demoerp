@@ -1,10 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, ResultEntryStatus, UserType } from "@prisma/client";
-import * as fs from "fs";
-import * as path from "path";
 import PDFDocument from "pdfkit";
 import { AuthUser } from "../auth/auth.types";
 import { formatIstDateTime } from "../common/ist-time.util";
+import { drawPdfWordmark } from "../common/pdf-institutional.util";
 import {
   computeJntukCgpa,
   computeJntukSemesterSgpa,
@@ -271,23 +270,6 @@ export class StudentPortalMarksService {
     return `${year}.${part}`;
   }
 
-  private resolveLogoPath(): string | null {
-    const candidates = [
-      path.join(__dirname, "..", "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "src", "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "..", "frontend", "public", "kiet-logo.png")
-    ];
-    for (const p of candidates) {
-      try {
-        if (fs.existsSync(p)) return p;
-      } catch {
-        /* ignore */
-      }
-    }
-    return null;
-  }
-
   private async buildMarksPdfBuffer(
     meta: {
       studentName: string;
@@ -309,17 +291,14 @@ export class StudentPortalMarksService {
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      const logoPath = this.resolveLogoPath();
-      if (logoPath) {
-        try {
-          doc.image(logoPath, doc.x, doc.y, { width: 110 });
-          doc.moveDown(1.2);
-        } catch {
-          /* no logo */
-        }
-      }
+      const left = doc.page.margins.left;
+      let y = doc.page.margins.top;
+      y = drawPdfWordmark(doc, left, y, "center");
 
-      doc.fontSize(16).fillColor("#004b8d").text("Statement of grades", { align: "center" });
+      doc.fontSize(16).fillColor("#004b8d").text("Statement of grades", left, y, {
+        align: "center",
+        width: doc.page.width - left - doc.page.margins.right
+      });
       doc.moveDown(0.35);
       doc.fontSize(11).fillColor("#333").text(`Semester ${meta.semesterLabel}`, { align: "center" });
       if (meta.examFilter) {
@@ -358,7 +337,7 @@ export class StudentPortalMarksService {
       const c2 = 320;
       const c3 = 400;
       const c4 = 470;
-      let y = doc.y;
+      y = doc.y;
       doc.font("Helvetica-Bold").fontSize(8);
       doc.text("Code", c0, y);
       doc.text("Subject", c1, y, { width: 190 });

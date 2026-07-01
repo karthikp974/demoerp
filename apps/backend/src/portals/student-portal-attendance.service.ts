@@ -1,8 +1,6 @@
 import { ForbiddenException, BadRequestException, Injectable } from "@nestjs/common";
 import { AttendanceEntryStatus, UserType } from "@prisma/client";
 import ExcelJS from "exceljs";
-import * as fs from "fs";
-import * as path from "path";
 import PDFDocument from "pdfkit";
 import { AuthUser } from "../auth/auth.types";
 import { toPagination } from "../common/pagination.dto";
@@ -16,6 +14,8 @@ import {
   istMonthsAgoStart
 } from "../common/ist-time.util";
 import { formatSemesterLabel } from "../common/semester-label.util";
+import { INSTITUTION_ERP_NAME, INSTITUTION_NAME } from "../common/institution-branding.constants";
+import { drawPdfWordmark } from "../common/pdf-institutional.util";
 import { PrismaService } from "../prisma/prisma.service";
 import { StudentAttendanceExportQueryDto, StudentAttendanceExportRange, StudentAttendanceMonthPeriod, StudentAttendancePageQueryDto } from "./student-attendance-portal.dto";
 import { loadStudentPortalProfile } from "./student-portal-load-student";
@@ -405,23 +405,6 @@ export class StudentPortalAttendanceService {
     return semesterNumber === currentSemesterNumber ? `${label} (ongoing sem)` : label;
   }
 
-  private resolveLogoPath(): string | null {
-    const candidates = [
-      path.join(__dirname, "..", "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "src", "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "assets", "kiet-logo.png"),
-      path.join(process.cwd(), "..", "frontend", "public", "kiet-logo.png")
-    ];
-    for (const p of candidates) {
-      try {
-        if (fs.existsSync(p)) return p;
-      } catch {
-        /* ignore */
-      }
-    }
-    return null;
-  }
-
   private async buildPdfBuffer(
     meta: {
       studentName: string;
@@ -442,18 +425,10 @@ export class StudentPortalAttendanceService {
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      const logoPath = this.resolveLogoPath();
-      let y = doc.y;
-      if (logoPath) {
-        try {
-          doc.image(logoPath, doc.x, y, { width: 110 });
-          y = doc.y + 8;
-        } catch {
-          y = doc.y;
-        }
-      }
+      let y = doc.page.margins.top;
+      y = drawPdfWordmark(doc, doc.page.margins.left, y, "center");
 
-      doc.fontSize(16).fillColor("#004b8d").text("Attendance report", { align: "center" });
+      doc.fontSize(16).fillColor("#004b8d").text("Attendance report", doc.page.margins.left, y, { align: "center", width: doc.page.width - doc.page.margins.left - doc.page.margins.right });
       doc.moveDown(0.4);
       doc.fontSize(10).fillColor("#333333").text(meta.rangeLabel, { align: "center" });
       doc.moveDown(1);
@@ -529,10 +504,10 @@ export class StudentPortalAttendanceService {
     range: StudentAttendanceExportRange
   ) {
     const wb = new ExcelJS.Workbook();
-    wb.creator = "College ERP";
+    wb.creator = INSTITUTION_ERP_NAME;
     const ws = wb.addWorksheet("Attendance", { views: [{ state: "frozen", ySplit: 14 }] });
 
-    ws.getCell("A1").value = "KIET Group of Institutions";
+    ws.getCell("A1").value = INSTITUTION_NAME;
     ws.getCell("A1").font = { size: 14, bold: true, color: { argb: "FF004B8D" } };
     ws.mergeCells("A1:C1");
     ws.getCell("A2").value = meta.rangeLabel;

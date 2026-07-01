@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ProfileMenuButton } from "./ProfileMenu";
 import { PortalNotificationsButton } from "./PortalNotificationsButton";
 import { usePortalTheme } from "./portal-theme";
-import { INSTITUTION_ERP_TITLE, INSTITUTION_LOGO_SRC, INSTITUTION_NAME } from "./institution-branding";
+import { InstitutionLogoMark } from "./InstitutionLogoMark";
+import { INSTITUTION_ERP_TITLE } from "./institution-branding";
 
 type Props = {
   pageTitle: string;
@@ -79,7 +80,7 @@ export function PortalShellHeader({
             <h1 className="portal-shell-title-only db-header-title">{pageTitle}</h1>
           ) : !subPageBackHref ? (
             <>
-              <img className="erp-header-logo" src={INSTITUTION_LOGO_SRC} alt={INSTITUTION_NAME} />
+              <InstitutionLogoMark variant="header" />
               <div className="erp-header-copy">
                 <p className="erp-header-title">{INSTITUTION_ERP_TITLE}</p>
                 <p className="erp-header-subtitle">{portalLabel}</p>

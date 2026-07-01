@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
     host: "0.0.0.0",
     port: frontendPort,
     strictPort: true,
-    // EC2 / custom domain (kiet.workflowtech.info): allow Host header in Docker preview.
+    // Custom domain / Docker preview: allow Host header when configured.
     allowedHosts: previewHostPolicy,
     proxy: {
       "/api": {
