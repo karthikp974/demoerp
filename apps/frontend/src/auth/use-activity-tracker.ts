@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { deviceLocationPayload, readCachedDeviceLocation, readDeviceLocation } from "../shared/device-location";
+import { deviceLocationPayload, readCachedDeviceLocation } from "../shared/device-location";
 import { outreachRefPayload } from "../shared/outreach-ref";
 import { useAuth } from "./auth-context";
 import { portalFromPath } from "./owner.util";
@@ -10,11 +10,6 @@ export function useActivityTracker() {
   const { user, authFetch } = useAuth();
   const location = useLocation();
   const lastPath = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!user) return;
-    void readDeviceLocation();
-  }, [user]);
 
   useEffect(() => {
     if (!user) return;

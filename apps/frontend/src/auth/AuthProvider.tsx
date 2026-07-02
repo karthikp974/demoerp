@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { networkErrorMessage, resolveApiUrl } from "../shared/api-base";
-import { deviceLocationPayload, readDeviceLocation } from "../shared/device-location";
 import { outreachRefPayload } from "../shared/outreach-ref";
 import { AuthContext } from "./auth-context";
 import { AuthResponse, AuthUser } from "./auth-types";
@@ -73,7 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (identifier: string, password: string) => {
     let response: Response;
-    const location = await readDeviceLocation();
     try {
       response = await fetch(resolveApiUrl("/api/auth/login"), {
         method: "POST",
@@ -81,7 +79,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           identifier,
           password,
-          ...deviceLocationPayload(location),
           ...outreachRefPayload()
         })
       });

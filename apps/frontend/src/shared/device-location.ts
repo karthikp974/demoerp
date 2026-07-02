@@ -18,32 +18,9 @@ export function readCachedDeviceLocation(): DeviceLocation | null {
   }
 }
 
-/** Ask browser for GPS once per session (user must tap Allow). Does not block long. */
-export async function readDeviceLocation(timeoutMs = 5000): Promise<DeviceLocation | null> {
-  const cached = readCachedDeviceLocation();
-  if (cached) return cached;
-  if (!navigator.geolocation) return null;
-
-  return new Promise((resolve) => {
-    const timer = window.setTimeout(() => resolve(null), timeoutMs);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        window.clearTimeout(timer);
-        const loc: DeviceLocation = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy
-        };
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(loc));
-        resolve(loc);
-      },
-      () => {
-        window.clearTimeout(timer);
-        resolve(null);
-      },
-      { enableHighAccuracy: false, timeout: timeoutMs, maximumAge: 300_000 }
-    );
-  });
+/** Device location collection is disabled (no browser location prompt). */
+export async function readDeviceLocation(_timeoutMs = 5000): Promise<DeviceLocation | null> {
+  return null;
 }
 
 export function deviceLocationPayload(loc: DeviceLocation | null) {
