@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import * as Pages from "./app-lazy-pages";
 import { ActivityTracker } from "./auth/use-activity-tracker";
@@ -9,12 +10,17 @@ import { getDefaultPortal } from "./auth/portal-redirect";
 import { SpectatorDashboardPage } from "./spectator/SpectatorDashboardPage";
 import { ErpLoader } from "./shared/ErpLoader";
 import { LazyRouteBoundary } from "./shared/LazyRouteBoundary";
+import { captureOutreachRefFromUrl } from "./shared/outreach-ref";
 import { Shell } from "./shared/Shell";
 import { useChunkLoadRecovery } from "./shared/useChunkLoadRecovery";
 
 export function App() {
   const { user, isLoading } = useAuth();
   useChunkLoadRecovery();
+
+  useEffect(() => {
+    captureOutreachRefFromUrl();
+  }, []);
 
   return (
     <>

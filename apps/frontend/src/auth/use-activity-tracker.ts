@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { deviceLocationPayload, readCachedDeviceLocation, readDeviceLocation } from "../shared/device-location";
+import { outreachRefPayload } from "../shared/outreach-ref";
 import { useAuth } from "./auth-context";
 import { portalFromPath } from "./owner.util";
 
@@ -28,7 +29,8 @@ export function useActivityTracker() {
         path,
         portal: portalFromPath(location.pathname),
         kind: "PAGE_VIEW",
-        ...deviceLocationPayload(readCachedDeviceLocation())
+        ...deviceLocationPayload(readCachedDeviceLocation()),
+        ...outreachRefPayload()
       })
     }).catch(() => undefined);
   }, [authFetch, location.pathname, location.search, user]);
@@ -43,7 +45,8 @@ export function useActivityTracker() {
           path: `${window.location.pathname}${window.location.search}`,
           portal: portalFromPath(window.location.pathname),
           kind: "HEARTBEAT",
-          ...deviceLocationPayload(readCachedDeviceLocation())
+          ...deviceLocationPayload(readCachedDeviceLocation()),
+          ...outreachRefPayload()
         })
       }).catch(() => undefined);
     }, 90_000);

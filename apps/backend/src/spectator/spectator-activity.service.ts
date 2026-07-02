@@ -82,7 +82,8 @@ export class SpectatorActivityService {
               longitude: dto.longitude,
               ...(dto.location_accuracy != null ? { location_accuracy: dto.location_accuracy } : {})
             }
-          : {})
+          : {}),
+        ...(dto.outreach_ref?.trim() ? { outreach_id: dto.outreach_ref.trim() } : {})
       }
     });
 

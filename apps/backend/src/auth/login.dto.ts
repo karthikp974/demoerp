@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString, MinLength } from "class-validator";
+import { IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class LoginDto {
   @IsString()
@@ -25,4 +25,10 @@ export class LoginDto {
   @Type(() => Number)
   @IsNumber()
   location_accuracy?: number;
+
+  /** Outreach email tracking id from ?wftref= on demo link */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  outreach_ref?: string;
 }

@@ -31,6 +31,11 @@ export class TrackActivityDto {
   @Type(() => Number)
   @IsNumber()
   location_accuracy?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  outreach_ref?: string;
 }
 
 export class OpsSessionsQueryDto extends PaginationQueryDto {
